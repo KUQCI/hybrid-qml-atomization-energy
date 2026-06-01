@@ -2,21 +2,19 @@
 
 > QCC R&D | Quantum Machine Learning
 
-A hybrid quantum-classical machine learning model for predicting molecular atomization energies.
+A hybrid quantum-classical neural network that predicts molecular atomization energies on the QM7 dataset. The model encodes molecular features (Coulomb matrix eigenvalues) into a variational quantum circuit (PennyLane), whose expectation value outputs feed into a classical output layer trained end-to-end via PyTorch.
 
-## Overview
-
-This project explores quantum-enhanced ML architectures for molecular property prediction, combining parameterized quantum circuits (PQC) with classical neural networks.
+**Target:** < 1.0 kcal/mol MAE — chemical accuracy.
 
 ## Structure
 
 ```
 .
-├── data/           # Datasets and preprocessing
-├── models/         # Classical, quantum, and hybrid model definitions
-├── notebooks/      # Experiments and analysis
-├── src/            # Core source code
-└── scripts/        # Training and evaluation scripts
+├── data/               # Raw and preprocessed QM7 splits
+├── models/             # Quantum, classical, and hybrid model definitions
+├── notebooks/          # Experiments, results, and final demo notebook
+├── results/            # Experiment logs (CSV), checkpoints, plots
+└── scripts/            # Training, evaluation, and baseline scripts
 ```
 
 ## Setup
@@ -27,10 +25,20 @@ pip install -r requirements.txt
 
 ## Stack
 
-- **PennyLane** — quantum circuit simulation and gradient computation
-- **PyTorch** — classical layers and training loop
-- **RDKit / ASE** — molecular feature extraction
+| Component | Library |
+|-----------|---------|
+| Dataset | DeepChem (QM7, Coulomb matrix featurizer) |
+| Quantum layer | PennyLane (`qml.QNode` + `qml.qnn.TorchLayer`) |
+| Classical layers | PyTorch (`nn.Module`) |
+| Baselines | scikit-learn (Kernel Ridge Regression) |
+| Experiment tracking | CSV logger (model, MAE, hyperparams) |
+
+## Models
+
+- **Hybrid QML** — classical encoder → variational quantum circuit → linear output
+- **Classical ablation** — identical architecture, quantum layer replaced with linear layer
+- **KRR baseline** — Laplacian kernel ridge regression on eigenvalue features
 
 ## Status
 
-🚧 Active development
+Active development — Phase 1 (data + environment setup)

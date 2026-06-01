@@ -1,0 +1,12 @@
+deepchem>=2.7
+pennylane>=0.36
+pennylane-qiskit>=0.36
+torch>=2.0
+torchvision
+numpy
+scipy
+scikit-learn
+matplotlib
+pandas
+jupyter
+rdkit
