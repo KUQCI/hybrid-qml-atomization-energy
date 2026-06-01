@@ -23,11 +23,11 @@ env/
 
 # Data & datasets
 data/raw/
+data/splits/
 *.h5
 *.hdf5
 *.npz
 *.npy
-*.csv
 *.pkl
 *.pickle
 
@@ -42,7 +42,8 @@ runs/
 logs/
 *.log
 output/
-results/
+results/*.png
+results/*.pdf
 *.out
 
 # IDE
