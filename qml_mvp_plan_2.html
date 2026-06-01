@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QML Project — MVP Plan v2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #1e1e2e;
+    --accent-q: #7c6ff7;
+    --accent-green: #3dffa0;
+    --accent-yellow: #f7d060;
+    --accent-red: #ff6b6b;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --p1: #7c6ff7;
+    --p2: #6bcfff;
+    --p3: #3dffa0;
+    --p4: #f7d060;
+    --p5: #ff9f6b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    padding: 40px 24px 80px;
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 28px;
+    margin-bottom: 32px;
+  }
+
+  .header .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-q);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-size: 34px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 14px;
+  }
+
+  .header h1 span { color: var(--accent-q); }
+
+  .header p {
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 600px;
+  }
+
+  /* GOAL + TARGET ROW */
+  .meta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+
+  .meta-box {
+    border-radius: 6px;
+    padding: 16px 18px;
+    border: 1px solid;
+  }
+
+  .meta-box .meta-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .meta-box p { font-size: 13px; }
+
+  .goal-box {
+    background: rgba(124, 111, 247, 0.06);
+    border-color: rgba(124, 111, 247, 0.3);
+  }
+  .goal-box .meta-label { color: var(--p1); }
+
+  .target-box {
+    background: rgba(61, 255, 160, 0.05);
+    border-color: rgba(61, 255, 160, 0.3);
+  }
+  .target-box .meta-label { color: var(--accent-green); }
+
+  .target-box .big-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent-green);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .target-box .sub { font-size: 12px; color: var(--muted); }
+
+  /* TEAM LEGEND */
+  .team-legend {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+
+  .team-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 7px 13px;
+    font-size: 12px;
+  }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* PHASES */
+  .phase {
+    margin-bottom: 28px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .phase-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    min-width: 56px;
+  }
+
+  .phase-title { font-size: 16px; font-weight: 700; flex: 1; }
+
+  .phase-timeline {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+
+  .phase-exit {
+    font-size: 12px;
+    color: var(--accent-green);
+    background: rgba(61, 255, 160, 0.05);
+    border-top: 1px solid rgba(61, 255, 160, 0.15);
+    padding: 10px 20px;
+  }
+
+  .phase-exit .exit-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-green);
+    opacity: 0.6;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  /* TASKS */
+  .tasks {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .task {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 11px 13px;
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+  }
+
+  .task-owner {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+
+  .task-body { flex: 1; }
+
+  .task-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+
+  .task-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  .task-owner-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-transform: uppercase;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  /* PHASE ACCENT COLORS */
+  .phase-1 .phase-header { background: rgba(124,111,247,0.05); }
+  .phase-2 .phase-header { background: rgba(107,207,255,0.04); }
+  .phase-3 .phase-header { background: rgba(61,255,160,0.04); }
+  .phase-4 .phase-header { background: rgba(247,208,96,0.04); }
+  .phase-5 .phase-header { background: rgba(255,159,107,0.04); }
+
+  .p1 .phase-title { color: var(--p1); }
+  .p2 .phase-title { color: var(--p2); }
+  .p3 .phase-title { color: var(--p3); }
+  .p4 .phase-title { color: var(--p4); }
+  .p5 .phase-title { color: var(--p5); }
+
+  /* OWNER COLORS */
+  .owner-a { background: #7c6ff7; }
+  .owner-b { background: #3dffa0; }
+  .owner-c { background: #f7d060; }
+  .owner-all { background: #ff9f6b; }
+
+  .risk-note {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    padding: 8px 16px;
+    border-top: 1px solid var(--border);
+    background: rgba(255,107,107,0.03);
+  }
+  .risk-note span { color: var(--accent-red); }
+
+  .deliverable {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(107, 207, 255, 0.06);
+    border: 1px solid rgba(107, 207, 255, 0.2);
+    border-radius: 6px;
+    padding: 12px 18px;
+    margin: 16px 16px 20px;
+  }
+  .deliverable .del-icon { font-size: 18px; }
+  .deliverable .del-text { font-size: 12px; color: #6bcfff; }
+  .deliverable .del-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: rgba(107,207,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    display: block;
+    margin-bottom: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="label">QML Research Project · MVP Roadmap v2</div>
+  <h1>Quantum-Enhanced<br><span>Molecular Energy Prediction</span></h1>
+  <p>Quantum layer first. Baselines second. One clear target to beat.</p>
+</div>
+
+<div class="meta-row">
+  <div class="meta-box goal-box">
+    <div class="meta-label">🎯 Project Goal</div>
+    <p>Build a hybrid quantum-classical model on QM7 that predicts atomization energies. Show the quantum layer contributes, then compare against classical baselines to tell a complete story for sponsors.</p>
+  </div>
+  <div class="meta-box target-box">
+    <div class="meta-label">📏 Target Accuracy</div>
+    <div class="big-num">&lt; 1.0</div>
+    <div class="sub">kcal/mol MAE — the definition of <strong>chemical accuracy</strong>.<br>If we hit this, we're in legitimate research territory.</div>
+  </div>
+</div>
+
+<div class="team-legend">
+  <div class="team-badge"><div class="dot owner-a"></div> Person A — Data & Training</div>
+  <div class="team-badge"><div class="dot owner-b"></div> Person B — Quantum Circuit</div>
+  <div class="team-badge"><div class="dot owner-c"></div> Person C — Integration & Results</div>
+  <div class="team-badge"><div class="dot owner-all"></div> All Three</div>
+</div>
+
+<!-- PHASE 1 -->
+<div class="phase phase-1 p1">
+  <div class="phase-header">
+    <div class="phase-num">PHASE 01</div>
+    <div class="phase-title">Environment & Data Setup</div>
+    <div class="phase-timeline">~2–3 days</div>
+  </div>
+  <div class="tasks">
+    <div class="task">
+      <div class="task-owner owner-a"></div>
+      <div class="task-body">
+        <div class="task-title">Load QM7 via DeepChem</div>
+        <div class="task-desc">Use dc.molnet.load_qm7() to load the dataset. DeepChem handles the download automatically. Inspect the returned DiskDataset: verify 7165 samples, confirm feature shape (Coulomb matrices) and label shape (atomization energies). Print min/max/mean of labels.</div>
+      </div>
+      <div class="task-owner-label">Person A</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-a"></div>
+      <div class="task-body">
+        <div class="task-title">Split & preprocess via DeepChem</div>
+        <div class="task-desc">Use dc.splits.RandomSplitter (or ScaffoldSplitter) with frac_train=0.7, frac_valid=0.15, frac_test=0.15 and a fixed seed. Apply dc.feat.CoulombMatrix or use the built-in featurizer. Normalize labels with a dc.trans.NormalizationTransformer. Save the three split datasets so everyone uses the same ones.</div>
+      </div>
+      <div class="task-owner-label">Person A</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-b"></div>
+      <div class="task-body">
+        <div class="task-title">Set up PennyLane + PyTorch environment</div>
+        <div class="task-desc">Install pennylane, pennylane-qiskit, torch. Run a 4-qubit smoke test circuit on default.qubit simulator. Confirm gradients flow through a TorchLayer. Write a one-file test script and commit it.</div>
+      </div>
+      <div class="task-owner-label">Person B</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-c"></div>
+      <div class="task-body">
+        <div class="task-title">Set up repo & experiment logging</div>
+        <div class="task-desc">Create repo with /data, /models, /results, /notebooks. Add requirements.txt. Set up a lightweight logger that saves: model name, MAE (val + test), config (n_qubits, depth, lr, epochs) to a CSV. This keeps all runs comparable.</div>
+      </div>
+      <div class="task-owner-label">Person C</div>
+    </div>
+  </div>
+  <div class="phase-exit">
+    <span class="exit-label">✅ Exit Criteria</span>
+    Data loads correctly on all machines. Smoke test circuit passes. Everyone has committed to the repo.
+  </div>
+</div>
+
+<!-- PHASE 2 -->
+<div class="phase phase-2 p2">
+  <div class="phase-header">
+    <div class="phase-num">PHASE 02</div>
+    <div class="phase-title">Quantum Layer — Design & Build</div>
+    <div class="phase-timeline">~4–5 days</div>
+  </div>
+  <div class="tasks">
+    <div class="task">
+      <div class="task-owner owner-b"></div>
+      <div class="task-body">
+        <div class="task-title">Design the variational ansatz (on paper first)</div>
+        <div class="task-desc">Decide: n_qubits (start with 4–6), encoding strategy (angle encoding of top-k eigenvalues), entanglement pattern (linear or all-to-all), number of variational layers. Document the design in a README before writing any code.</div>
+      </div>
+      <div class="task-owner-label">Person B</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-b"></div>
+      <div class="task-body">
+        <div class="task-title">Implement the QNode in PennyLane</div>
+        <div class="task-desc">Build the circuit as a qml.QNode. Input: encoded feature vector. Output: expectation values of Pauli-Z on each qubit. Test it on 5 random samples. Confirm output shape is (n_qubits,).</div>
+      </div>
+      <div class="task-owner-label">Person B</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-b"></div>
+      <div class="task-body">
+        <div class="task-title">Wrap as a differentiable PyTorch layer</div>
+        <div class="task-desc">Use qml.qnn.TorchLayer. Run a toy backward pass and confirm gradients are non-None. This is the gate: if gradients don't flow, the model can't train. Fix it before moving on.</div>
+      </div>
+      <div class="task-owner-label">Person B</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-c"></div>
+      <div class="task-body">
+        <div class="task-title">Build the full hybrid model</div>
+        <div class="task-desc">Stack as a single nn.Module: (1) classical linear encoder → n_qubits dims, (2) TorchLayer (quantum), (3) linear output layer → scalar energy. The whole pipeline must be callable like a normal PyTorch model.</div>
+      </div>
+      <div class="task-owner-label">Person C</div>
+    </div>
+  </div>
+  <div class="phase-exit">
+    <span class="exit-label">✅ Exit Criteria</span>
+    Hybrid model runs forward pass without error. Gradients flow end-to-end. Output is a scalar per sample.
+  </div>
+</div>
+
+<!-- PHASE 3 -->
+<div class="phase phase-3 p3">
+  <div class="phase-header">
+    <div class="phase-num">PHASE 03</div>
+    <div class="phase-title">Training & Chasing Chemical Accuracy</div>
+    <div class="phase-timeline">~4–5 days</div>
+  </div>
+  <div class="tasks">
+    <div class="task">
+      <div class="task-owner owner-a"></div>
+      <div class="task-body">
+        <div class="task-title">Build the training loop</div>
+        <div class="task-desc">MSE loss, Adam optimizer. Log train loss and val MAE every epoch. First run on 200 samples just to confirm loss decreases. Then scale to the full training set. Every run must be logged via the experiment CSV.</div>
+      </div>
+      <div class="task-owner-label">Person A</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-a"></div>
+      <div class="task-body">
+        <div class="task-title">Hyperparameter tuning loop</div>
+        <div class="task-desc">Vary: learning rate (1e-3, 5e-4, 1e-4), number of epochs (50, 100, 200), circuit depth (1 vs 2 layers). Run each config, log all results. The goal is to get val MAE as close to 1.0 kcal/mol as possible.</div>
+      </div>
+      <div class="task-owner-label">Person A</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-b"></div>
+      <div class="task-body">
+        <div class="task-title">Circuit architecture iterations</div>
+        <div class="task-desc">If MAE is stuck above 2.0 kcal/mol after tuning, try: more qubits, different encoding (IQP encoding vs angle), stronger entanglement. Each change is a new experiment entry in the log. Don't throw away old results.</div>
+      </div>
+      <div class="task-owner-label">Person B</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-c"></div>
+      <div class="task-body">
+        <div class="task-title">Track best model & save checkpoints</div>
+        <div class="task-desc">Save torch.save() checkpoint for every run that improves val MAE. Keep the top-3 checkpoints. At end of phase, run the best checkpoint on the held-out test set and record the official test MAE.</div>
+      </div>
+      <div class="task-owner-label">Person C</div>
+    </div>
+  </div>
+  <div class="risk-note"><span>⚠ Reality check:</span> Quantum simulation on CPU is slow. Sub-sample to 500–1000 molecules if needed — this is standard in QML research and doesn't undermine the work. Prioritize getting clean results over using all 7165 samples.</div>
+  <div class="phase-exit">
+    <span class="exit-label">✅ Exit Criteria</span>
+    You have a best test MAE from the hybrid model recorded. Even if it's above 1.0 kcal/mol — you have a number, and you know what you tried. That's enough to move forward.
+  </div>
+</div>
+
+<!-- PHASE 4 -->
+<div class="phase phase-4 p4">
+  <div class="phase-header">
+    <div class="phase-num">PHASE 04</div>
+    <div class="phase-title">Classical Baselines & Comparison</div>
+    <div class="phase-timeline">~3 days</div>
+  </div>
+  <div class="tasks">
+    <div class="task">
+      <div class="task-owner owner-a"></div>
+      <div class="task-body">
+        <div class="task-title">Implement KRR baseline</div>
+        <div class="task-desc">sklearn KernelRidge with Laplacian kernel on the same eigenvalue features, same train/test split. Grid search alpha and gamma. Target: reproduce ~3.1 kcal/mol from literature. Log result.</div>
+      </div>
+      <div class="task-owner-label">Person A</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-c"></div>
+      <div class="task-body">
+        <div class="task-title">Implement classical-equivalent hybrid (ablation)</div>
+        <div class="task-desc">Replace the quantum TorchLayer with a classical linear layer of identical input/output dimensions. Train with identical settings as your best quantum run. This is the critical comparison: does the quantum layer actually help?</div>
+      </div>
+      <div class="task-owner-label">Person C</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-b"></div>
+      <div class="task-body">
+        <div class="task-title">Optionally: try a quantum-enhanced SchNet-style model</div>
+        <div class="task-desc">If time permits and results are weak, explore inserting a quantum layer into a SchNet-like message passing network. This is the "quantum-enhanced SchNet" direction Osama mentioned. Not required for MVP, but worth attempting if Phase 3 MAE is disappointing.</div>
+      </div>
+      <div class="task-owner-label">Person B</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-all"></div>
+      <div class="task-body">
+        <div class="task-title">Compile the results table</div>
+        <div class="task-desc">Build: Model | Input | Test MAE | vs Chemical Accuracy (<1.0). Rows: KRR baseline, classical-equivalent hybrid, quantum hybrid (best config), and optionally quantum-SchNet. This table is the centerpiece of your presentation.</div>
+      </div>
+      <div class="task-owner-label">All Three</div>
+    </div>
+  </div>
+  <div class="phase-exit">
+    <span class="exit-label">✅ Exit Criteria</span>
+    Results table is complete. You have written 3–5 bullet conclusions: what worked, what didn't, and your hypothesis for why.
+  </div>
+</div>
+
+<!-- PHASE 5 -->
+<div class="phase phase-5 p5">
+  <div class="phase-header">
+    <div class="phase-num">PHASE 05</div>
+    <div class="phase-title">Presentation & Demo</div>
+    <div class="phase-timeline">~2–3 days</div>
+  </div>
+  <div class="tasks">
+    <div class="task">
+      <div class="task-owner owner-c"></div>
+      <div class="task-body">
+        <div class="task-title">Build the results notebook</div>
+        <div class="task-desc">Clean Jupyter notebook: problem → dataset → model architecture → training → results table → plots → conclusions. Runnable top-to-bottom. This is your primary deliverable — sponsors can execute it live.</div>
+      </div>
+      <div class="task-owner-label">Person C</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-a"></div>
+      <div class="task-body">
+        <div class="task-title">Produce the key visualizations</div>
+        <div class="task-desc">(1) MAE bar chart: all models vs the 1.0 kcal/mol chemical accuracy line, (2) predicted vs actual scatter for best model, (3) training loss curve. Export as clean PNGs. These go directly into the notebook and any slides.</div>
+      </div>
+      <div class="task-owner-label">Person A</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-b"></div>
+      <div class="task-body">
+        <div class="task-title">Visualize & explain the quantum circuit</div>
+        <div class="task-desc">Use qml.draw() to produce the ansatz diagram. Write 3–5 sentences explaining each section (encoding layer, variational layer, measurement). This is visually compelling — it shows sponsors what "quantum" actually means in your model.</div>
+      </div>
+      <div class="task-owner-label">Person B</div>
+    </div>
+    <div class="task">
+      <div class="task-owner owner-all"></div>
+      <div class="task-body">
+        <div class="task-title">Rehearse the 5-minute walkthrough</div>
+        <div class="task-desc">Structure: "Here's the problem → here's why quantum → here's our model → here are our results vs chemical accuracy → here's what it means." Each person owns one section. Run it once as a dry-run before any sponsor meeting.</div>
+      </div>
+      <div class="task-owner-label">All Three</div>
+    </div>
+  </div>
+  <div class="deliverable">
+    <div class="del-icon">🚀</div>
+    <div class="del-text">
+      <span class="del-label">Final Deliverable</span>
+      A runnable Jupyter notebook with all results, the full model comparison table anchored on the &lt;1.0 kcal/mol chemical accuracy target, visualizations, and a circuit diagram.
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
