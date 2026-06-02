@@ -51,6 +51,8 @@ results/*.pdf
 .idea/
 *.swp
 *.swo
+.codex
+.agents
 
 # OS
 .DS_Store
