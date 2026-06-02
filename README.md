@@ -1,6 +1,6 @@
 # Hybrid QML — Atomization Energy Prediction
 
-> QCC R&D | Quantum Machine Learning
+> QCI R&D | Quantum Machine Learning
 
 A hybrid quantum-classical neural network that predicts molecular atomization energies on the QM7 dataset. The model encodes molecular features (Coulomb matrix eigenvalues) into a variational quantum circuit (PennyLane), whose expectation value outputs feed into a classical output layer trained end-to-end via PyTorch.
 
