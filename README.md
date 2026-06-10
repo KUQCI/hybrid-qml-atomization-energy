@@ -19,9 +19,30 @@ A hybrid quantum-classical neural network that predicts molecular atomization en
 
 ## Setup
 
+Use Python 3.12 (DeepChem does not support 3.13 yet).
+
 ```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+
+# Verify environment (must PASS before Phase 2)
+python scripts/smoke_test.py
+
+# Download QM7 and create the seeded 70/15/15 splits
+python data/load_qm7.py
 ```
+
+macOS note: if `load_qm7.py` fails with `SSL: CERTIFICATE_VERIFY_FAILED`
+(python.org framework builds don't use system certificates), run it as:
+
+```bash
+SSL_CERT_FILE="$(python -m certifi)" python data/load_qm7.py
+```
+
+The loader drops ~650 of QM7's 7,165 molecules that fail Coulomb matrix
+featurization, leaving 6,515. Labels are normalized to train-set statistics;
+`data/splits/y_transformer.pkl` maps predictions back to kcal/mol.
 
 ## Stack
 
@@ -41,4 +62,4 @@ pip install -r requirements.txt
 
 ## Status
 
-Active development — Phase 1 (data + environment setup)
+Active development — Phase 1 complete (environment verified, QM7 splits generated); starting Phase 2 (baseline + hybrid model training)
