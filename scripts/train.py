@@ -29,6 +29,7 @@ from models.hybrid_model import build_classical_ablation, build_model
 from utils.logger import ExperimentLogger
 
 CHECKPOINT_DIR = ROOT / "results" / "checkpoints"
+HISTORY_DIR = ROOT / "results" / "history"
 KEEP_TOP_K = 3
 
 
@@ -95,6 +96,7 @@ def main() -> None:
 
     best_val_mae = math.inf
     best_path = None
+    history = []
     start = time.time()
 
     for epoch in range(1, args.epochs + 1):
@@ -110,6 +112,7 @@ def main() -> None:
         epoch_loss /= len(X_train)
 
         val_mae = mae_kcal(model, X_val, y_val, y_std)
+        history.append((epoch, epoch_loss, val_mae))
         marker = ""
         if val_mae < best_val_mae:
             best_val_mae = val_mae
@@ -122,6 +125,11 @@ def main() -> None:
 
     elapsed = time.time() - start
     prune_checkpoints()
+
+    HISTORY_DIR.mkdir(parents=True, exist_ok=True)
+    with open(HISTORY_DIR / f"{args.model_name}.csv", "w") as f:
+        f.write("epoch,train_mse,val_mae_kcal\n")
+        f.writelines(f"{e},{m:.6f},{v:.4f}\n" for e, m, v in history)
 
     test_mae = float("nan")
     if args.eval_test and best_path is not None and best_path.exists():

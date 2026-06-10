@@ -13,3 +13,5 @@ timestamp,model_name,val_mae,test_mae,n_qubits,depth,lr,epochs,notes
 2026-06-10 18:30:13,hybrid_6q_d3_e400,16.5534,nan,6,3,0.001,400,"hybrid, n_train=4560, 469s. sweep r2: longer training"
 2026-06-10 18:31:08,hybrid_6q_d3_e400_TEST,16.5534,16.0464,6,3,0.001,400,official test eval of best checkpoint
 2026-06-10 18:31:13,ablation_6q_d3,16.9455,16.1339,6,3,0.001,400,"classical-ablation, n_train=4560, 12s. classical ablation, settings matched to best hybrid"
+2026-06-10 18:41:29,hybrid_6q_d3_e400,16.5534,nan,6,3,0.001,400,"hybrid, n_train=4560, 472s. rerun for loss history (deterministic, same seed)"
+2026-06-10 18:41:44,ablation_6q_d3,16.9455,nan,6,3,0.001,400,"classical-ablation, n_train=4560, 10s. rerun for loss history"
