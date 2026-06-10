@@ -4,7 +4,20 @@
 
 A hybrid quantum-classical neural network that predicts molecular atomization energies on the QM7 dataset. The model encodes molecular features (Coulomb matrix eigenvalues) into a variational quantum circuit (PennyLane), whose expectation value outputs feed into a classical output layer trained end-to-end via PyTorch.
 
-**Target:** < 1.0 kcal/mol MAE — chemical accuracy.
+## Targets & baselines
+
+Accuracy standards for this project, in order of ambition:
+
+| Bar | MAE (kcal/mol) | Meaning |
+|-----|----------------|---------|
+| Chemical accuracy | < 1.0 | The chemistry gold standard. **Not reachable with eigenvalue features** — published QM7 results below ~3 all use richer representations (full sorted/randomized Coulomb matrices) and large classical nets. Kept as aspirational context. |
+| Eigenvalue-feature literature | ~10 | KRR on Coulomb-matrix *eigenvalues* (Rupp et al. 2012). The honest reference for any model trained on our feature set. |
+| **Our KRR baseline** | **10.76 (test)** | Laplacian-kernel KRR on our exact features and splits (`scripts/baseline_krr.py`). Reproduces the literature value → pipeline verified. **This is the bar the hybrid model is judged against.** |
+| Classical ablation | TBD | Same hybrid architecture with the quantum layer swapped for a linear layer. The hybrid must beat this for the quantum layer to be claimed useful. |
+
+Caveats for any literature comparison: we train on 6,515 molecules (not
+7,165 — see Setup) with a 70/15/15 random split, and our features are the
+23-dim eigenvalue spectrum, which discards spatial information by design.
 
 ## Structure
 
@@ -60,6 +73,28 @@ featurization, leaving 6,515. Labels are normalized to train-set statistics;
 - **Classical ablation** — identical architecture, quantum layer replaced with linear layer
 - **KRR baseline** — Laplacian kernel ridge regression on eigenvalue features
 
+## Training & experiments
+
+```bash
+# Build eigenvalue features (once, after load_qm7.py)
+python data/features.py
+
+# Train the hybrid model (all runs append to results/experiments.csv)
+python scripts/train.py --model-name hybrid_4q_d2 --epochs 200
+
+# Classical ablation with identical settings
+python scripts/train.py --model-name ablation_4q --classical --epochs 200
+
+# KRR baseline
+python scripts/baseline_krr.py
+```
+
+`--eval-test` evaluates the best checkpoint on the held-out test set —
+use it once per final model, not during tuning.
+
 ## Status
 
-Active development — Phase 1 complete (environment verified, QM7 splits generated); starting Phase 2 (baseline + hybrid model training)
+Active development — Phases 1–2 complete (environment verified, splits + features
+generated, hybrid model trains end-to-end). Phase 3 in progress: hyperparameter
+sweep over qubits/depth/lr. First full-data hybrid run: 21.7 kcal/mol val MAE
+vs the 10.76 KRR bar.
