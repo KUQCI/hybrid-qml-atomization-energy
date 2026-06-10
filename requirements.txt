@@ -1,4 +1,5 @@
 deepchem>=2.7
+tqdm  # required by deepchem but not declared in its dev builds
 pennylane>=0.36
 pennylane-qiskit>=0.36
 torch>=2.0
