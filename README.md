@@ -13,7 +13,7 @@ Accuracy standards for this project, in order of ambition:
 | Chemical accuracy | < 1.0 | The chemistry gold standard. **Not reachable with eigenvalue features** — published QM7 results below ~3 all use richer representations (full sorted/randomized Coulomb matrices) and large classical nets. Kept as aspirational context. |
 | Eigenvalue-feature literature | ~10 | KRR on Coulomb-matrix *eigenvalues* (Rupp et al. 2012). The honest reference for any model trained on our feature set. |
 | **Our KRR baseline** | **10.76 (test)** | Laplacian-kernel KRR on our exact features and splits (`scripts/baseline_krr.py`). Reproduces the literature value → pipeline verified. **This is the bar the hybrid model is judged against.** |
-| Classical ablation | TBD | Same hybrid architecture with the quantum layer swapped for a linear layer. The hybrid must beat this for the quantum layer to be claimed useful. |
+| Classical ablation | 16.13 (test) | Same hybrid architecture with the quantum layer swapped for a linear layer. The hybrid must beat this for the quantum layer to be claimed useful. |
 
 Caveats for any literature comparison: we train on 6,515 molecules (not
 7,165 — see Setup) with a 70/15/15 random split, and our features are the
@@ -92,9 +92,32 @@ python scripts/baseline_krr.py
 `--eval-test` evaluates the best checkpoint on the held-out test set —
 use it once per final model, not during tuning.
 
+## Results
+
+All models trained/evaluated on identical eigenvalue features and splits.
+Best hybrid config from a 10-run sweep: 6 qubits, depth 3, lr 1e-3, 400 epochs.
+
+| Model | Input | Test MAE (kcal/mol) | vs chemical accuracy (<1.0) |
+|-------|-------|---------------------|------------------------------|
+| KRR (Laplacian) | 23 eigenvalues | **10.76** | 10.8× |
+| Hybrid quantum (6q, depth 3) | 23 eigenvalues | 16.05 | 16.0× |
+| Classical ablation (same shape) | 23 eigenvalues | 16.13 | 16.1× |
+
+Conclusions:
+
+- **The quantum layer does not help at this scale**: hybrid (16.05) vs its
+  classical twin (16.13) is a tie within noise, and the hybrid costs ~40×
+  the training time (469 s vs 12 s for 400 epochs).
+- Both neural variants trail KRR by ~5 kcal/mol — the Linear(23→6)
+  encoder bottleneck discards information the kernel method uses in full.
+- Circuit depth mattered more than width: depth 2→3 cut MAE by 22%;
+  adding qubits (4→8) at fixed depth did nothing.
+- Chemical accuracy is out of reach for eigenvalue features regardless of
+  model class; richer representations would be the Phase-next direction.
+
 ## Status
 
-Active development — Phases 1–2 complete (environment verified, splits + features
-generated, hybrid model trains end-to-end). Phase 3 in progress: hyperparameter
-sweep over qubits/depth/lr. First full-data hybrid run: 21.7 kcal/mol val MAE
-vs the 10.76 KRR bar.
+Phases 1–4 complete: environment verified, data + features pipelines, hybrid
+model trained and swept (10 logged runs), KRR baseline and classical ablation
+done, official test results recorded. Remaining: Phase 5 (results notebook,
+plots, circuit diagram, presentation).

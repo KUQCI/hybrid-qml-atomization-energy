@@ -1,0 +1,15 @@
+timestamp,model_name,val_mae,test_mae,n_qubits,depth,lr,epochs,notes
+2026-06-10 17:27:47,sanity_200,148.6436,nan,4,2,0.001,20,"hybrid, n_train=200, 1s. sanity run: loss must decrease"
+2026-06-10 17:29:29,krr_laplacian,10.7413,10.7593,,,,,"KRR baseline, alpha=1e-03, gamma=1e-01, eigenvalue features, 4560 train"
+2026-06-10 17:31:10,hybrid_4q_d2_full,21.7316,nan,4,2,0.001,200,"hybrid, n_train=4560, 130s. first full-data run"
+2026-06-10 17:45:08,hybrid_4q_d2_lr5e4,22.556,nan,4,2,0.0005,200,"hybrid, n_train=4560, 107s. sweep"
+2026-06-10 17:46:37,hybrid_4q_d1,22.5751,nan,4,1,0.001,200,"hybrid, n_train=4560, 85s. sweep"
+2026-06-10 17:49:41,hybrid_6q_d2,21.4262,nan,6,2,0.001,200,"hybrid, n_train=4560, 181s. sweep"
+2026-06-10 17:53:42,hybrid_6q_d3,16.915,nan,6,3,0.001,200,"hybrid, n_train=4560, 237s. sweep"
+2026-06-10 18:00:21,hybrid_8q_d2,21.6515,nan,8,2,0.001,200,"hybrid, n_train=4560, 395s. sweep"
+2026-06-10 18:05:55,hybrid_6q_d4,20.3167,nan,6,4,0.001,200,"hybrid, n_train=4560, 282s. sweep r2"
+2026-06-10 18:11:33,hybrid_6q_d5,17.2975,nan,6,5,0.001,200,"hybrid, n_train=4560, 334s. sweep r2"
+2026-06-10 18:22:19,hybrid_8q_d3,17.5228,nan,8,3,0.001,200,"hybrid, n_train=4560, 641s. sweep r2"
+2026-06-10 18:30:13,hybrid_6q_d3_e400,16.5534,nan,6,3,0.001,400,"hybrid, n_train=4560, 469s. sweep r2: longer training"
+2026-06-10 18:31:08,hybrid_6q_d3_e400_TEST,16.5534,16.0464,6,3,0.001,400,official test eval of best checkpoint
+2026-06-10 18:31:13,ablation_6q_d3,16.9455,16.1339,6,3,0.001,400,"classical-ablation, n_train=4560, 12s. classical ablation, settings matched to best hybrid"
