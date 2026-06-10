@@ -4,12 +4,15 @@ import torch
 from torch import nn
 
 from models.quantum_layer import build_quantum_layer
-from scripts.hybrid_model_skeleton import (
-    BATCH_SIZE,
+from models.hybrid_model import (
     FEATURE_DIM,
-    N_QUBITS,
+    AngleRescale,
+    build_classical_ablation,
     build_model,
 )
+
+N_QUBITS = 4
+BATCH_SIZE = 8
 
 
 class QuantumLayerTests(unittest.TestCase):
@@ -31,22 +34,29 @@ class QuantumLayerTests(unittest.TestCase):
         self.assertTrue(all(p.grad is not None for p in layer.parameters()))
 
 
-class HybridModelSkeletonTests(unittest.TestCase):
+class HybridModelTests(unittest.TestCase):
     def test_build_model_returns_expected_sequential_model(self):
-        model = build_model()
+        model = build_model(n_qubits=N_QUBITS, depth=2)
 
         self.assertIsInstance(model, nn.Sequential)
-        self.assertEqual(len(model), 3)
+        self.assertEqual(len(model), 4)
         self.assertIsInstance(model[0], nn.Linear)
-        self.assertIsInstance(model[2], nn.Linear)
+        self.assertIsInstance(model[1], AngleRescale)
+        self.assertIsInstance(model[3], nn.Linear)
         self.assertEqual(model[0].in_features, FEATURE_DIM)
         self.assertEqual(model[0].out_features, N_QUBITS)
-        self.assertEqual(model[2].in_features, N_QUBITS)
-        self.assertEqual(model[2].out_features, 1)
+        self.assertEqual(model[3].in_features, N_QUBITS)
+        self.assertEqual(model[3].out_features, 1)
+
+    def test_angle_rescale_bounds_outputs(self):
+        x = torch.randn(100, N_QUBITS) * 50
+        out = AngleRescale()(x)
+
+        self.assertTrue(torch.all(out.abs() <= torch.pi))
 
     def test_hybrid_model_forward_and_backward(self):
         torch.manual_seed(42)
-        model = build_model()
+        model = build_model(n_qubits=N_QUBITS, depth=2)
         x = torch.randn(BATCH_SIZE, FEATURE_DIM)
         y = torch.randn(BATCH_SIZE, 1)
 
@@ -56,6 +66,15 @@ class HybridModelSkeletonTests(unittest.TestCase):
 
         self.assertEqual(tuple(predictions.shape), (BATCH_SIZE, 1))
         self.assertTrue(any(p.grad is not None for p in model.parameters()))
+
+    def test_classical_ablation_matches_hybrid_interface(self):
+        torch.manual_seed(42)
+        model = build_classical_ablation(n_qubits=N_QUBITS, depth=2)
+        x = torch.randn(BATCH_SIZE, FEATURE_DIM)
+
+        predictions = model(x)
+
+        self.assertEqual(tuple(predictions.shape), (BATCH_SIZE, 1))
 
 
 if __name__ == "__main__":

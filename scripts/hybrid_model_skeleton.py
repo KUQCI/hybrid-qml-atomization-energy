@@ -1,5 +1,8 @@
 """
-Minimal hybrid model skeleton for QM7-style eigenvalue features.
+Minimal hybrid model demo for QM7-style eigenvalue features.
+
+The model itself lives in models/hybrid_model.py; this script just runs a
+forward/backward pass on random data to show the pipeline is differentiable.
 
 Run from the repo root:
     python scripts/hybrid_model_skeleton.py
@@ -14,31 +17,17 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from models.quantum_layer import build_quantum_layer
+from models.hybrid_model import FEATURE_DIM, build_model
 
-
-FEATURE_DIM = 23
 N_QUBITS = 4
 DEPTH = 2
 BATCH_SIZE = 8
 
 
-def build_model() -> nn.Sequential:
-    quantum_layer = build_quantum_layer(n_qubits=N_QUBITS, depth=DEPTH)
-    return nn.Sequential(
-        nn.Linear(FEATURE_DIM, N_QUBITS), # input
-        
-        # hidden
-        quantum_layer,
-
-        nn.Linear(N_QUBITS, 1), # output
-    )
-
-
 def main() -> None:
     torch.manual_seed(42)
 
-    model = build_model()
+    model = build_model(n_qubits=N_QUBITS, depth=DEPTH)
     x = torch.randn(BATCH_SIZE, FEATURE_DIM)
     y = torch.randn(BATCH_SIZE, 1)
 
